@@ -1,4 +1,4 @@
-D                       [0-9]
+D                       [0-9]Je di
 L                       [a-zA-Z_]
 H                       [a-fA-F0-9]
 E                       [Ee][+-]?{D}+
@@ -17,8 +17,8 @@ IS                      (u|U|l|L)*
 
 %%
 
-D			{yylval = atoi(yytext); return NB; }
-
+D+			{ yylval = atoi(yytext); return NB; }
+H+			{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
 
 "extern"                { return EXTERN; }
@@ -31,9 +31,18 @@ D			{yylval = atoi(yytext); return NB; }
 
 "void"                  { return VOID; }
 
+"+"			{ return '+'; }
+"-"			{ return '-'; }
+"*"			{ return '*'; }
+"/"			{ return '/'; }
+
+"&"			{ return '&'; }
 ">>"                    { return ">>"; }
 "<<"                    { return "<<"; }
+"|"			{ return "|"; }
 
+"<"			{ return "<"; }
+">"			{ return ">"; }
 "&&"                    { return "&&"; }
 "||"                    { return "||"; }
 "<="                    { return "<="; }
@@ -42,7 +51,10 @@ D			{yylval = atoi(yytext); return NB; }
 "!="                    { return "!="; }
 
 [ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
-.                       { return yytext[0]; }
+.                       { printf "Erreur lexicale"; return yytext[0]; }
+
+
+
 
 
 "auto"                  { /* A completer */ }
