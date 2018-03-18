@@ -16,6 +16,35 @@ IS                      (u|U|l|L)*
 %}
 
 %%
+
+D			{yylval = atoi(yytext); return NB; }
+
+
+
+"extern"                { return EXTERN; }
+
+"goto"                  { return GOTO; }
+"if"                    { return IF; }
+"int"                   { return INT; }
+
+"return"                { return RETURN; }
+
+"void"                  { return VOID; }
+
+">>"                    { return ">>"; }
+"<<"                    { return "<<"; }
+
+"&&"                    { return "&&"; }
+"||"                    { return "||"; }
+"<="                    { return "<="; }
+">="                    { return ">="; }
+"=="                    { return "=="; }
+"!="                    { return "!="; }
+
+[ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
+.                       { return yytext[0]; }
+
+
 "auto"                  { /* A completer */ }
 "break"                 { /* A completer */ }
 "case"                  { /* A completer */ }
@@ -27,15 +56,13 @@ IS                      (u|U|l|L)*
 "double"                { /* A completer */ }
 "else"                  { /* A completer */ }
 "enum"                  { /* A completer */ }
-"extern"                { /* A completer */ }
+
 "float"                 { /* A completer */ }
 "for"                   { /* A completer */ }
-"goto"                  { /* A completer */ }
-"if"                    { /* A completer */ }
-"int"                   { /* A completer */ }
+
 "long"                  { /* A completer */ }
 "register"              { /* A completer */ }
-"return"                { /* A completer */ }
+
 "short"                 { /* A completer */ }
 "signed"                { /* A completer */ }
 "sizeof"                { /* A completer */ }
@@ -45,7 +72,7 @@ IS                      (u|U|l|L)*
 "typedef"               { /* A completer */ }
 "union"                 { /* A completer */ }
 "unsigned"              { /* A completer */ }
-"void"                  { /* A completer */ }
+
 "volatile"              { /* A completer */ }
 "while"                 { /* A completer */ }
 
@@ -73,19 +100,10 @@ L?\"(\\.|[^\\"])*\"     { /* A completer */ }
 "&="                    { /* A completer */ }
 "^="                    { /* A completer */ }
 "|="                    { /* A completer */ }
-">>"                    { /* A completer */ }
-"<<"                    { /* A completer */ }
+
 "++"                    { /* A completer */ }
 "--"                    { /* A completer */ }
 "->"                    { /* A completer */ }
-"&&"                    { /* A completer */ }
-"||"                    { /* A completer */ }
-"<="                    { /* A completer */ }
-">="                    { /* A completer */ }
-"=="                    { /* A completer */ }
-"!="                    { /* A completer */ }
 
-[ \t\v\n\f]             { /* A completer */ }
-.                       { return yytext[0]; }
 %%
 
