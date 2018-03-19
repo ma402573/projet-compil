@@ -3,13 +3,16 @@
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
 %token BREAK RETURN PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
 %token GEQ LEQ EQ NEQ NOT EXTERN
+
 %left PLUS MOINS
 %left MUL DIV
 %left LSHIFT RSHIFT
 %left BOR BAND
 %left LAND LOR
+
 %nonassoc THEN
 %nonassoc ELSE
+
 %left OP
 %left REL
 %start programme
@@ -23,10 +26,10 @@ liste_declarations	:
 ;
 liste_fonctions	:	
 		liste_fonctions fonction
-|               fonction
+	|    
 ;
 declaration	:	
-		type liste_declarateurs ';'
+		INT liste_declarateurs ';'
 ;
 liste_declarateurs	:	
 		liste_declarateurs ',' declarateur
@@ -45,8 +48,12 @@ type	:
 	|	INT
 ;
 liste_parms	:	
-		liste_parms ',' parm
+		l_parms
 	|	
+;
+l_parms :
+		parm
+	|	l_parms ',' parm
 ;
 parm	:	
 		INT IDENTIFICATEUR
@@ -112,11 +119,11 @@ condition	:
 ;
 binary_op	:	
 		PLUS
-	|       MOINS
+	|   MOINS
 	|	MUL
 	|	DIV
-	|       LSHIFT
-	|       RSHIFT
+	|   LSHIFT
+	|   RSHIFT
 	|	BAND
 	|	BOR
 ;

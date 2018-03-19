@@ -34,14 +34,17 @@ liste_declarateurs	:
 ;
 declarateur	:	
 		IDENTIFICATEUR
-| MUL IDENTIFICATEUR
-| IDENTIFICATEUR '[' CONSTANTE ']'
+	| MUL IDENTIFICATEUR
+	| IDENTIFICATEUR '[' CONSTANTE ']'
 ;
 fonction	:	
-		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
-	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
+		type_fct IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
+	|	EXTERN type_fct IDENTIFICATEUR '(' liste_parms ')' ';'
 ;
-type	:	
+type 		:
+		INT
+;
+type_fct	:	
 		VOID
 	|	INT
 ;
@@ -57,7 +60,7 @@ liste_instructions :
 	|
 ;
 instruction	:	
-                instructionlabelisee
+		instructionlabelisee
 	|	saut
 	|	affectation 
 	|	bloc
@@ -66,15 +69,15 @@ instruction	:
 saut	:	
 		GOTO IDENTIFICATEUR ';'
 	|	IF '(' condition ')' GOTO IDENTIFICATEUR ';'
-        |       RETURN scalaire ';'
+	|   RETURN scalaire ';'
 	|	RETURN ';'
 ;
 instructionlabelisee: IDENTIFICATEUR ':' instruction ';'
 ;
 affectation	:	
 		IDENTIFICATEUR '=' expression ';'
-		| IDENTIFICATEUR '=' MUL IDENTIFICATEUR ';'
-		| MUL IDENTIFICATEUR '=' scalaire ';'
+	| 	IDENTIFICATEUR '=' MUL IDENTIFICATEUR ';'
+	| 	MUL IDENTIFICATEUR '=' scalaire ';'
 ;
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
@@ -89,8 +92,8 @@ scalaire	:
 expression	:	
 		scalaire binary_op scalaire 
 	|	MOINS scalaire
-|       scalaire
-|	IDENTIFICATEUR '(' liste_scalaires ')'
+	|   scalaire
+	|	IDENTIFICATEUR '(' liste_scalaires ')'
 ;
 liste_scalaires	:	
 		liste_scalaires ',' scalaire
@@ -98,16 +101,17 @@ liste_scalaires	:
 ;
 condition	:	
 		NOT IDENTIFICATEUR
+	|	IDENTIFICATEUR
 	|	scalaire binary_rel scalaire %prec REL
 	|	scalaire binary_comp scalaire
 ;
 binary_op	:	
 		PLUS
-	|       MOINS
+	|   MOINS
 	|	MUL
 	|	DIV
-	|       LSHIFT
-	|       RSHIFT
+	|   LSHIFT
+	|   RSHIFT
 	|	BAND
 	|	BOR
 ;
