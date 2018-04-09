@@ -7,7 +7,7 @@ IS                      (u|U|l|L)*
 
 %{
 #include <stdio.h>
-#include "y.tab.h"
+/*include "y.tab.h"*/
 
 
 /* Ne gère pas les commentaires. A rajouter */
@@ -31,91 +31,80 @@ H+			{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
 "void"                  { return VOID; }
 
-"+"			{ return '+'; }
-"-"			{ return '-'; }
-"*"			{ return '*'; }
-"/"			{ return '/'; }
+"+"						{ return '+'; }
+"-"						{ return '-'; }
+"*"						{ return '*'; }
+"/"						{ return '/'; }
 
-"&"			{ return '&'; }
-">>"                    { return ">>"; }
-"<<"                    { return "<<"; }
-"|"			{ return "|"; }
+"&"						{ return '&'; }
+">>"					{ return RSHIFT; }
+"<<"					{ return LSHIFT; }
+"|"						{ return '|'; }
 
-"<"			{ return "<"; }
-">"			{ return ">"; }
-"&&"                    { return "&&"; }
-"||"                    { return "||"; }
-"<="                    { return "<="; }
-">="                    { return ">="; }
-"=="                    { return "=="; }
-"!="                    { return "!="; }
+"<"						{ return '<'; }
+">"						{ return '>'; }
+"&&"                    { return LAND; }
+"||"                    { return LOR; }
+"<="                    { return LEQ; }
+">="                    { return GEQ; }
+"=="                    { return EQ; }
+"!="                    { return NEQ; }
 
 [ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
-.                       { printf "Erreur lexicale"; return yytext[0]; }
+.						{ printf ("Erreur lexicale"); return yytext[0]; }
 
 
 
 
 
-"auto"                  { /* A completer */ }
-"break"                 { /* A completer */ }
-"case"                  { /* A completer */ }
-"char"                  { /* A completer */ }
-"const"                 { /* A completer */ }
-"continue"              { /* A completer */ }
-"default"               { /* A completer */ }
-"do"                    { /* A completer */ }
-"double"                { /* A completer */ }
-"else"                  { /* A completer */ }
-"enum"                  { /* A completer */ }
+"auto"                  {  }
+"break"                 {  }
+"case"                  {  }
+"char"                  {  }
+"const"                 {  }
+"continue"              {  }
+"default"               {  }
+"do"                    {  }
+"double"                {  }
+"else"                  {  }
+"enum"                  {  }
 
-"float"                 { /* A completer */ }
-"for"                   { /* A completer */ }
+"float"                 {  }
 
-"long"                  { /* A completer */ }
-"register"              { /* A completer */ }
+"long"                  {  }
+"register"              {  }
 
-"short"                 { /* A completer */ }
-"signed"                { /* A completer */ }
-"sizeof"                { /* A completer */ }
-"static"                { /* A completer */ }
-"struct"                { /* A completer */ }
-"switch"                { /* A completer */ }
-"typedef"               { /* A completer */ }
-"union"                 { /* A completer */ }
-"unsigned"              { /* A completer */ }
+"short"                 {  }
+"signed"                {  }
+"sizeof"                {  }
+"static"                {  }
+"struct"                {  }
+"switch"                {  }
+"typedef"               {  }
+"union"                 {  }
+"unsigned"              {  }
 
-"volatile"              { /* A completer */ }
-"while"                 { /* A completer */ }
+"volatile"              {  }
+"while"                 {  }
 
-{L}({L}|{D})*           { /* A completer */ }
 
-0[xX]{H}+{IS}?          { /* A completer */ }
-0{D}+{IS}?              { /* A completer */ }
-{D}+{IS}?               { /* A completer */ }
-L?'(\\.|[^\\'])+'       { /* A completer */ }
+L?\"(\\.|[^\\"])*\"     {  }
 
-{D}+{E}{FS}?            { /* A completer */ }
-{D}*"."{D}+({E})?{FS}?  { /* A completer */ }
-{D}+"."{D}*({E})?{FS}?  { /* A completer */ }
+"..."                   {  }
+">>="                   {  }
+"<<="                   {  }
+"+="                    {  }
+"-="                    {  }
+"*="                    {  }
+"/="                    {  }
+"%="                    {  }
+"&="                    {  }
+"^="                    {  }
+"|="                    {  }
 
-L?\"(\\.|[^\\"])*\"     { /* A completer */ }
-
-"..."                   { /* A completer */ }
-">>="                   { /* A completer */ }
-"<<="                   { /* A completer */ }
-"+="                    { /* A completer */ }
-"-="                    { /* A completer */ }
-"*="                    { /* A completer */ }
-"/="                    { /* A completer */ }
-"%="                    { /* A completer */ }
-"&="                    { /* A completer */ }
-"^="                    { /* A completer */ }
-"|="                    { /* A completer */ }
-
-"++"                    { /* A completer */ }
-"--"                    { /* A completer */ }
-"->"                    { /* A completer */ }
+"++"                    {  }
+"--"                    {  }
+"->"                    {  }
 
 %%
 
