@@ -34,8 +34,8 @@ IS                      (u|U|l|L)*
 
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  {/* Sert a ignorer les commentaires */}
 
-"-"?D+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
-L(L|D)*           	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
+"-"?[0-9]+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
+[a-zA-Z]([a-zA-Z]|[0-9])* 	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
 ">>"			{ return RSHIFT; }
 "<<"			{ return LSHIFT; }
@@ -47,17 +47,8 @@ L(L|D)*           	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 "=="                    { return EQ; }
 "!="                    { return NEQ; }
 
-"+"			{ return '+'; }
-"-"			{ return '-'; }
-"*"			{ return '*'; }
-"/"			{ return '/'; }
+[-+*/()=&|<>;{},]   return yytext[0]; 
 
-"&"			{ return '&'; }
-"|"			{ return '|'; }
-
-"<"			{ return '<'; }
-">"			{ return '>'; }
-
-.			{ printf ("%d Erreur lexicale.\n",yytext[0]); }
+.			{ printf ("%c Erreur lexicale.\n",yytext[0]); }
 %%
 

@@ -40,7 +40,8 @@ programme	:
 
 liste_declarations	:	
 		liste_declarations declaration 
-			{$$.code = concat($1.code, $2.code); }
+			{$$.code = concat($1.code, $2.code); 
+			printf("%s \n", $2.code); }
 
 	|	
 			{$$.code = ""; }
@@ -52,8 +53,7 @@ liste_fonctions	:
 
 	|       fonction
 			{$$.code = $1.code;
-			printf("Fonctions : \n");
-			printf("%s ", $1.code); }
+			printf("%s \n", $1.code); }
 ;
 
 declaration	:	
@@ -111,7 +111,7 @@ liste_parms	:
 
 parm	:
 		INT IDENTIFICATEUR
-			{$$.code = concat(itoa($1.intval), $2.strval); }
+			{$$.code = concat("int ", $2.strval); }
 ;
 
 liste_instructions :	
