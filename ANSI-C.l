@@ -1,4 +1,4 @@
-D                       [0-9]Je di
+D                       [0-9]
 L                       [a-zA-Z_]
 H                       [a-fA-F0-9]
 E                       [Ee][+-]?{D}+
@@ -7,42 +7,39 @@ IS                      (u|U|l|L)*
 
 %{
 #include <stdio.h>
-/*include "y.tab.h"*/
-
-
-/* Ne gère pas les commentaires. A rajouter */
-/* Supprimer les lignes dont vous n'avez pas besoin. */
-
+#include <stdlib.h>
+#include <string.h>
+#include "y.tab.h"
 %}
-
 %%
 
-D+			{ yylval = atoi(yytext); return NB; }
-H+			{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
-
+[ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
 
 "extern"                { return EXTERN; }
 
-"goto"                  { return GOTO; }
 "if"                    { return IF; }
-"int"                   { return INT; }
+"else"                  { return ELSE; }
+"while"                 { return WHILE; }
+"for"			{ return FOR; }
+
+"switch"                { return SWITCH; }
+"break"                 { return BREAK; }
+"case"                  { return CASE; }
+"default"               { return DEFAULT; }
 
 "return"                { return RETURN; }
 
+"int"                   { return INT; }
 "void"                  { return VOID; }
 
-"+"						{ return '+'; }
-"-"						{ return '-'; }
-"*"						{ return '*'; }
-"/"						{ return '/'; }
+[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  {/* Sert a ignorer les commentaires */}
 
-"&"						{ return '&'; }
-">>"					{ return RSHIFT; }
-"<<"					{ return LSHIFT; }
-"|"						{ return '|'; }
+"-"?D+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
+L(L|D)*           	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
-"<"						{ return '<'; }
-">"						{ return '>'; }
+">>"			{ return RSHIFT; }
+"<<"			{ return LSHIFT; }
+
 "&&"                    { return LAND; }
 "||"                    { return LOR; }
 "<="                    { return LEQ; }
@@ -50,61 +47,17 @@ H+			{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 "=="                    { return EQ; }
 "!="                    { return NEQ; }
 
-[ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
-.						{ printf ("Erreur lexicale"); return yytext[0]; }
+"+"			{ return '+'; }
+"-"			{ return '-'; }
+"*"			{ return '*'; }
+"/"			{ return '/'; }
 
+"&"			{ return '&'; }
+"|"			{ return '|'; }
 
+"<"			{ return '<'; }
+">"			{ return '>'; }
 
-
-
-"auto"                  {  }
-"break"                 {  }
-"case"                  {  }
-"char"                  {  }
-"const"                 {  }
-"continue"              {  }
-"default"               {  }
-"do"                    {  }
-"double"                {  }
-"else"                  {  }
-"enum"                  {  }
-
-"float"                 {  }
-
-"long"                  {  }
-"register"              {  }
-
-"short"                 {  }
-"signed"                {  }
-"sizeof"                {  }
-"static"                {  }
-"struct"                {  }
-"switch"                {  }
-"typedef"               {  }
-"union"                 {  }
-"unsigned"              {  }
-
-"volatile"              {  }
-"while"                 {  }
-
-
-L?\"(\\.|[^\\"])*\"     {  }
-
-"..."                   {  }
-">>="                   {  }
-"<<="                   {  }
-"+="                    {  }
-"-="                    {  }
-"*="                    {  }
-"/="                    {  }
-"%="                    {  }
-"&="                    {  }
-"^="                    {  }
-"|="                    {  }
-
-"++"                    {  }
-"--"                    {  }
-"->"                    {  }
-
+.			{ printf ("%d Erreur lexicale.\n",yytext[0]); }
 %%
 
