@@ -35,13 +35,13 @@
 
 programme	:	
 		liste_declarations liste_fonctions
-			{$$.code = concat($1.code, $2.code); }
+			{$$.code = concat($1.code, $2.code);
+			printf("%s ", $$.code); }
 ;
 
 liste_declarations	:	
 		liste_declarations declaration 
-			{$$.code = concat($1.code, $2.code); 
-			printf("%s \n", $$.code); }
+			{$$.code = concat($1.code, $2.code); }
 
 	|	
 			{$$.code = ""; }
@@ -49,17 +49,15 @@ liste_declarations	:
 
 liste_fonctions	:	
 		liste_fonctions fonction
-			{$$.code = concat($1.code, $2.code); 
-			printf("%s \n", $$.code); }
+			{$$.code = concat($1.code, $2.code); }
 
 	|       fonction
-			{$$.code = $1.code;
-			printf("%s \n", $$.code); }
+			{$$.code = $1.code; }
 ;
 
 declaration	:	
 		type liste_declarateurs ';'
-			{char* sTab[3] = {$1.code, $2.code, ";"};
+			{char* sTab[3] = {$1.code, $2.code, ";\n"};
 			$$.code = concatTab(sTab, 3); }
 ;
 
@@ -77,17 +75,17 @@ declarateur	:
 			{$$.code = strdup($1.strval); }
 
 	|	declarateur '[' CONSTANTE ']'
-			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]"};
+			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]\n"};
 			$$.code = concatTab(sTab, 4); }
 ;
 
 fonction	:	
 		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
-			{char* sTab[8] = {$1.code, $2.strval, "(", $4.code, ") {", $7.code, $8.code, "}"};
+			{char* sTab[8] = {$1.code, $2.strval, "(", $4.code, ") {\n", $7.code, $8.code, "}\n"};
 			$$.code = concatTab(sTab, 8); }
 
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
-			{char* sTab[6] = {"extern ", $2.code, $3.strval, "(", $5.code, ");"};
+			{char* sTab[6] = {"extern ", $2.code, $3.strval, "(", $5.code, ");\n"};
 			$$.code = concatTab(sTab, 6); }
 ;
 
@@ -130,7 +128,7 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-			{$$.code = concat($1.code, ";"); }
+			{$$.code = concat($1.code, ";\n"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -139,7 +137,7 @@ instruction	:
 
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction
-			{char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ") ", $9.code};
+			{char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
 			$$.code = concatTab(sTab, 8); }
 
 	|	WHILE '(' condition ')' instruction
@@ -149,21 +147,33 @@ iteration	:
 
 selection	:	
 		IF '(' condition ')' instruction %prec THEN
+			{char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
+			$$.code = concatTab(sTab, 4); }
+
 	|	IF '(' condition ')' instruction ELSE instruction
+			{char* sTab[6] = {"if (", $3.code, ") ", $5.code, " else ", $7.code};
+			$$.code = concatTab(sTab, 6); }
+
 	|	SWITCH '(' expression ')' instruction
+			{char* sTab[4] = {"switch (", $3.code, ") ", $5.code};
+			$$.code = concatTab(sTab, 4); }
+
 	|	CASE CONSTANTE ':' instruction
+			{char* sTab[4] = {"case ", itoa($2.intval), " : ", $4.code};
+			$$.code = concatTab(sTab, 4); }
+
 	|	DEFAULT ':' instruction
 			{$$.code = concat("default : ", $3.code); }
 ;
 
 saut	:	
 		BREAK ';'
-			{$$.code = "break;"; }
+			{$$.code = "break;\n"; }
 	|	RETURN ';'
-			{$$.code = "return;"; }
+			{$$.code = "return;\n"; }
 
 	|	RETURN expression ';'
-			{char* sTab[3] = {"return", $2.code, ";"};
+			{char* sTab[3] = {"return", $2.code, ";\n"};
 			$$.code = concatTab(sTab, 3); }
 ;
 
@@ -175,13 +185,13 @@ affectation	:
 
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
-			{char* sTab[4] = {"{", $2.code, $3.code, "}" };
+			{char* sTab[4] = {"{\n", $2.code, $3.code, "}\n" };
 			$$.code = concatTab(sTab, 4); }
 ;
 
 appel	:	
 		IDENTIFICATEUR '(' liste_expressions ')' ';'
-			{char* sTab[4] = {$1.strval, "(", $3.code, ");" };
+			{char* sTab[4] = {$1.strval, "(", $3.code, ");\n" };
 			$$.code = concatTab(sTab, 4); }
 ;
 
