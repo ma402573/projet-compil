@@ -41,7 +41,7 @@ programme	:
 liste_declarations	:	
 		liste_declarations declaration 
 			{$$.code = concat($1.code, $2.code); 
-			printf("%s \n", $2.code); }
+			printf("%s \n", $$.code); }
 
 	|	
 			{$$.code = ""; }
@@ -49,11 +49,12 @@ liste_declarations	:
 
 liste_fonctions	:	
 		liste_fonctions fonction
-			{$$.code = concat($1.code, $2.code); }
+			{$$.code = concat($1.code, $2.code); 
+			printf("%s \n", $$.code); }
 
 	|       fonction
 			{$$.code = $1.code;
-			printf("%s \n", $1.code); }
+			printf("%s \n", $$.code); }
 ;
 
 declaration	:	
@@ -64,7 +65,7 @@ declaration	:
 
 liste_declarateurs	:	
 		liste_declarateurs ',' declarateur
-			{char* sTab[3] = {$1.code, ", ", $2.code};
+			{char* sTab[3] = {$1.code, ", ", $3.code};
 			$$.code = concatTab(sTab, 3); }
 
 	|	declarateur
@@ -153,6 +154,7 @@ selection	:
 	|	CASE CONSTANTE ':' instruction
 	|	DEFAULT ':' instruction
 			{$$.code = concat("default : ", $3.code); }
+;
 
 saut	:	
 		BREAK ';'
@@ -216,12 +218,12 @@ expression	:
 ;
 
 liste_expressions	:
-		expression 
-			{$$.code = $1.code; }
-
-	|	liste_expressions ',' expression 
+		liste_expressions ',' expression 
 			{char* sTab[3] = {$1.code, ", ", $3.code};
 			$$.code = concatTab(sTab, 3); }
+
+	| 	expression 
+			{$$.code = $1.code; }
 
 	|
 			{$$.code = ""; }

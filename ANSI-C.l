@@ -47,7 +47,14 @@ IS                      (u|U|l|L)*
 "=="                    { return EQ; }
 "!="                    { return NEQ; }
 
-[-+*/()=&|<>;{},]   return yytext[0]; 
+"+"			{ return PLUS; }
+"-"			{ return MOINS; }
+"/"			{ return DIV; }
+"*"			{ return MUL; }
+
+"<"			{ return LT; }
+">"			{ return GT; }
+[()=&|<>;{},]   return yytext[0]; 
 
 .			{ printf ("%c Erreur lexicale.\n",yytext[0]); }
 %%
