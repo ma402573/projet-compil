@@ -30,3 +30,11 @@
 
 # Debug files
 *.dSYM/
+
+lex\.yy\.c
+
+try
+
+y\.tab\.c
+
+y\.tab\.h

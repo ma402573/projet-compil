@@ -2,6 +2,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+
+int yylex();
+int yylineno;
+char* yytext;
+
+void yyerror(const char *str)
+{
+    fprintf(stderr,"Error Line: %d Token: %s %s\n",yylineno, yytext, str);
+}
+
 %}
 %token IDENTIFICATEUR CONSTANTE 
 %token VOID INT 
@@ -9,6 +20,7 @@
 %token BREAK RETURN
 %token PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
 %token GEQ LEQ EQ NEQ NOT EXTERN
+
 
 %left PLUS MOINS
 %left MUL DIV
@@ -128,7 +140,7 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-			{$$.code = concat($1.code, ";\n"); }
+			{$$.code = concat($1.code, ";"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -341,12 +353,6 @@ char* itoa(int nb)
 	}
 
 
-void yyerror(const char *str)
-	{
-       		 fprintf(stderr,"error: %s\n",str);
-	}
-
-
 
 int main()
 	{
@@ -375,3 +381,4 @@ int ecrireFichierRes()
 	}
 	return 0;
 }
+

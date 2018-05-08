@@ -34,7 +34,7 @@ IS                      (u|U|l|L)*
 
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  {/* Sert a ignorer les commentaires */}
 
-"-"?[0-9]+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
+[0-9]+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
 [a-zA-Z]([a-zA-Z]|[0-9])* 	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
 ">>"			{ return RSHIFT; }
@@ -54,8 +54,7 @@ IS                      (u|U|l|L)*
 
 "<"			{ return LT; }
 ">"			{ return GT; }
-[()=&|<>;{},]   return yytext[0]; 
 
-.			{ printf ("%c Erreur lexicale.\n",yytext[0]); }
+.			{ return yytext[0]; }
 %%
 
