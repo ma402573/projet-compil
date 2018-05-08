@@ -134,12 +134,13 @@ liste_instructions :
 
 instruction	:	
 		iteration
-			{$$.code = $1.code; }
+			{$$.code = $1.code;  }
 	|	selection
 			{$$.code = $1.code; }
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
+
 			{$$.code = concat($1.code, ";"); }
 	|	bloc
 			{$$.code = $1.code; }
