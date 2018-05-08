@@ -11,6 +11,8 @@ IS                      (u|U|l|L)*
 #include <string.h>
 #include "y.tab.h"
 %}
+
+%option yylineno
 %%
 
 [ \t\v\n\f]             {/* Sert a supprimer les blancs*/ }
@@ -20,7 +22,7 @@ IS                      (u|U|l|L)*
 "if"                    { return IF; }
 "else"                  { return ELSE; }
 "while"                 { return WHILE; }
-"for"			{ return FOR; }
+"for"					{ return FOR; }
 
 "switch"                { return SWITCH; }
 "break"                 { return BREAK; }
@@ -34,11 +36,11 @@ IS                      (u|U|l|L)*
 
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  {/* Sert a ignorer les commentaires */}
 
-"-"?[0-9]+			{ yylval.intval = atoi(yytext); return CONSTANTE; }
+"-"?[0-9]+				{ yylval.intval = atoi(yytext); return CONSTANTE; }
 [a-zA-Z]([a-zA-Z]|[0-9])* 	{ yylval.strval = strdup(yytext); return IDENTIFICATEUR; }
 
-">>"			{ return RSHIFT; }
-"<<"			{ return LSHIFT; }
+">>"					{ return RSHIFT; }
+"<<"					{ return LSHIFT; }
 
 "&&"                    { return LAND; }
 "||"                    { return LOR; }
@@ -47,15 +49,21 @@ IS                      (u|U|l|L)*
 "=="                    { return EQ; }
 "!="                    { return NEQ; }
 
-"+"			{ return PLUS; }
-"-"			{ return MOINS; }
-"/"			{ return DIV; }
-"*"			{ return MUL; }
+"+"						{ return PLUS; }
+"-"						{ return MOINS; }
+"/"						{ return DIV; }
+"*"						{ return MUL; }
 
-"<"			{ return LT; }
-">"			{ return GT; }
-[()=&|<>;{},]   return yytext[0]; 
+"<"						{ return LT; }
+">"						{ return GT; }
+"["						{ return yytext[0]; }
+"]"						{ return yytext[0]; }
+[()=&|<>;{},#:]   		{return yytext[0]; } 
 
-.			{ printf ("%c Erreur lexicale.\n",yytext[0]); }
+.						{ printf ("%c Erreur lexicale.\n",yytext[0]); }
 %%
 
+void yyerror(const char *str)
+{
+    fprintf(stderr,"Error Line: %d  %s\n",yylineno,str);
+}

@@ -10,6 +10,7 @@
 %token PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
 %token GEQ LEQ EQ NEQ NOT EXTERN
 
+
 %left PLUS MOINS
 %left MUL DIV
 %left LSHIFT RSHIFT
@@ -115,24 +116,31 @@ parm	:
 
 liste_instructions :	
 		liste_instructions instruction
-			{$$.code = concat($1.code, $2.code); }
+			{$$.code = concat($1.code, $2.code);
+			printf("Instruct : %s\n %s\n",$1.code,$2.code); }
 	|
 			{$$.code = ""; }
 ;
 
 instruction	:	
 		iteration
-			{$$.code = $1.code; }
+			{$$.code = $1.code;
+			printf("Iter\n"); }
 	|	selection
-			{$$.code = $1.code; }
+			{$$.code = $1.code;
+			printf("Select\n"); }
 	|	saut
-			{$$.code = $1.code; }
+			{$$.code = $1.code;
+			printf("Saut\n"); }
 	|	affectation ';'
-			{$$.code = concat($1.code, ";\n"); }
+			{$$.code = concat($1.code, ";");
+			printf("Affect\n"); }
 	|	bloc
-			{$$.code = $1.code; }
+			{$$.code = $1.code;
+			printf("Bloc\n"); }
 	|	appel
-			{$$.code = $1.code; }
+			{$$.code = $1.code; 
+			printf("Appel\n"); }
 ;
 
 iteration	:	
@@ -180,7 +188,8 @@ saut	:
 affectation	:	
 		variable '=' expression
 			{char* sTab[3] = {$1.code, " = ", $3.code};
-			$$.code = concatTab(sTab, 3); }
+			$$.code = concatTab(sTab, 3); 
+			printf("%s = %s \n",$1.code,$3.code);}
 ;
 
 bloc	:	
@@ -338,12 +347,6 @@ char* itoa(int nb)
 		char* s = malloc(sizeof(char) * dizaines);
 		sprintf(s, "%d", nb);
 		return s;
-	}
-
-
-void yyerror(const char *str)
-	{
-       		 fprintf(stderr,"error: %s\n",str);
 	}
 
 
