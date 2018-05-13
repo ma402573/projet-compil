@@ -87,7 +87,7 @@ declarateur	:
 			{$$.code = strdup($1.strval); }
 
 	|	declarateur '[' CONSTANTE ']'
-			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]\n"};
+			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]"};
 			$$.code = concatTab(sTab, 4); }
 ;
 
@@ -140,8 +140,7 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-
-			{$$.code = concat($1.code, ";"); }
+			{$$.code = concat($1.code, ";\n"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -150,12 +149,18 @@ instruction	:
 
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction
-			{char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
-			$$.code = concatTab(sTab, 8); }
+			{//char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
+
+			char* sTab[10] = {"L1: ", "if (", $5.code, ") goto ", "L2;\n", $9.code, $7.code, "\n}\n goto ", "L1;\n", "L2: "};
+			$$.code = concatTab(sTab, 10); }
 
 	|	WHILE '(' condition ')' instruction
-			{char* sTab[4] = {"while( ", $3.code, ") ", $5.code};
-			$$.code = concatTab(sTab, 4); }
+			{//char* sTab[4] = {"while( ", $3.code, ") ", $5.code};
+
+			char* l1 = newLink();
+			char* l2 = newLink();
+			char* sTab[10] = { "goto ", l1, "\n", l2, ": ", $5.code, "\n", l1, ": ", $3.code};
+			$$.code = concatTab(sTab, 10); }
 ;
 
 selection	:	
@@ -186,7 +191,7 @@ saut	:
 			{$$.code = "return;\n"; }
 
 	|	RETURN expression ';'
-			{char* sTab[3] = {"return", $2.code, ";\n"};
+			{char* sTab[3] = {"return ", $2.code, ";\n"};
 			$$.code = concatTab(sTab, 3); }
 ;
 
@@ -314,6 +319,7 @@ binary_comp	:
 %%
 
 char* res = "";
+int newNum = 1;
 
 char* concat(char* s1, char* s2)
 	{
@@ -366,10 +372,19 @@ int yywrap()
        		 return 1;
 	} 
 
+char* newLink() {
+		int link = newNum;
+		newNum++;
+		char* s = malloc (sizeof(char) * (10 + 1));
+		if (s == NULL){ exit(0); }
+		s = concat("L", itoa(link));
+		return *s;		
+		}
+
 
 char* insererDansRes(char* ajout){
 	res=concat(res,ajout);
-}
+		}
 
 int ecrireFichierRes()
 {
