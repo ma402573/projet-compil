@@ -166,8 +166,12 @@ iteration	:
 
 selection	:	
 		IF '(' condition ')' instruction %prec THEN
-			{char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
-			$$.code = concatTab(sTab, 4); }
+			{//char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
+
+			char* l = newLink();
+			char* sTab[9] = {"if ( ", $3.code, ") goto ", l,"\n", $5.code,"\n",l,":"};
+			//                       ^inverser la condition
+			$$.code = concatTab(sTab, 9); }
 
 	|	IF '(' condition ')' instruction ELSE instruction
 			{char* sTab[6] = {"if (", $3.code, ") ", $5.code, " else ", $7.code};
