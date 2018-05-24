@@ -102,7 +102,8 @@ expression	:
 	|	IDENTIFICATEUR '(' liste_scalaires ')'
 ;
 liste_scalaires	:	
-		liste_scalaires ',' scalaire
+		scalaire
+	|	liste_scalaires ',' scalaire
 	|
 ;
 condition	:	
