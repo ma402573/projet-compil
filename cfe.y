@@ -153,7 +153,7 @@ iteration	:
 			{//char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[16] = {$3.code, "\n",l1, ": ", "if (", $5.code, ") goto ", l2, ";\n", $9.code, $7.code, "\n}\n goto ", l1, ";\n", l2, ": "};
+			char* sTab[16] = {$3.code, "\n",l1, ": ", "if (", $5.code, ") goto ", l2, ";\n", $9.code, $7.code, "\n goto ", l1, ";\n", l2, ": "};
 			$$.code = concatTab(sTab, 16); }
 
 	|	WHILE '(' condition ')' instruction
@@ -161,7 +161,7 @@ iteration	:
 
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, "\n}\n"};
+			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, "\n"};
 			$$.code = concatTab(sTab, 14); }
 ;
 
@@ -217,8 +217,9 @@ affectation	:
 
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
-			{char* sTab[3] = {"{\n", $2.code, $3.code };
-			$$.code = concatTab(sTab, 3); }
+			{//char* sTab[3] = {"{\n", $2.code, $3.code };
+			//$$.code = concatTab(sTab, 3); 
+			$$.code = concat($2.code, $3.code); }
 ;
 
 appel	:	
