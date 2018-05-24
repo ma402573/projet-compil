@@ -141,7 +141,7 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-			{$$.code = concat($1.code, ";\n"); }
+			{$$.code = concat($1.code, "\n"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -161,7 +161,7 @@ iteration	:
 
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, "\n"};
+			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, ";\n"};
 			$$.code = concatTab(sTab, 14); }
 ;
 
@@ -170,7 +170,7 @@ selection	:
 			{//char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
 
 			char* l = newLink();
-			char* sTab[9] = {"if ( ", $3.code, ") goto ", l,"\n", $5.code,"\n",l,":"};
+			char* sTab[9] = {"if ( ", $3.code, ") goto ", l,";\n", $5.code,"\n",l,":"};
 			//                       ^inverser la condition
 			$$.code = concatTab(sTab, 9); }
 
@@ -179,9 +179,9 @@ selection	:
 
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[17] = {"if (", $3.code, ") goto ", l1, "\n", $5.code, "\n", l1, ": if (", $3.code, ") goto ", l2, "\n", $7.code, "\n", l2, ": "};
+			char* sTab[15] = {"if (", $3.code, ") goto ", l1, ";\n", $5.code, "goto ", l2, ";\n", l1, ": ", $7.code, "\n", l2, ": "};
 			//Penser à modifier la première condition en son inverse
-			$$.code = concatTab(sTab, 17); }
+			$$.code = concatTab(sTab, 15); }
 
 	|	SWITCH '(' expression ')' instruction
 			{char* sTab[4] = {"switch (", $3.code, ") ", $5.code};
@@ -211,8 +211,8 @@ saut	:
 
 affectation	:	
 		variable '=' expression
-			{char* sTab[3] = {$1.code, " = ", $3.code};
-			$$.code = concatTab(sTab, 3); }
+			{char* sTab[4] = {$1.code, " = ", $3.code, ";"};
+			$$.code = concatTab(sTab, 4); }
 ;
 
 bloc	:	

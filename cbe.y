@@ -78,7 +78,7 @@ saut	:
 	|   RETURN scalaire ';'
 	|	RETURN ';'
 ;
-instructionlabelisee: IDENTIFICATEUR ':' instruction ';'
+instructionlabelisee: IDENTIFICATEUR ':' instruction
 ;
 affectation	:	
 		IDENTIFICATEUR '=' expression ';'
