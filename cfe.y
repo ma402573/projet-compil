@@ -48,7 +48,8 @@ void yyerror(const char *str)
 programme	:	
 		liste_declarations liste_fonctions
 			{$$.code = concat($1.code, $2.code);
-			printf("%s ", $$.code); }
+			printf("%s ", $$.code);
+			insererDansRes($$.code); }
 ;
 
 liste_declarations	:	
@@ -152,15 +153,15 @@ iteration	:
 			{//char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[14] = {l1, ": ", "if (", $5.code, ") goto ", l2, ";\n", $9.code, $7.code, "\n}\n goto ", l1, ";\n", l2, ": "};
-			$$.code = concatTab(sTab, 14); }
+			char* sTab[16] = {$3.code, "\n",l1, ": ", "if (", $5.code, ") goto ", l2, ";\n", $9.code, $7.code, "\n}\n goto ", l1, ";\n", l2, ": "};
+			$$.code = concatTab(sTab, 16); }
 
 	|	WHILE '(' condition ')' instruction
 			{//char* sTab[4] = {"while( ", $3.code, ") ", $5.code};
 
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[14] = { "goto ", l1, "\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, "\n"};
+			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", $3.code, ") goto ", l2, "\n}\n"};
 			$$.code = concatTab(sTab, 14); }
 ;
 
@@ -174,16 +175,24 @@ selection	:
 			$$.code = concatTab(sTab, 9); }
 
 	|	IF '(' condition ')' instruction ELSE instruction
-			{char* sTab[6] = {"if (", $3.code, ") ", $5.code, " else ", $7.code};
-			$$.code = concatTab(sTab, 6); }
+			{//char* sTab[6] = {"if (", $3.code, ") ", $5.code, " else ", $7.code};
+
+			char* l1 = newLink();
+			char* l2 = newLink();
+			char* sTab[17] = {"if (", $3.code, ") goto ", l1, "\n", $5.code, "\n", l1, ": if (", $3.code, ") goto ", l2, "\n", $7.code, "\n", l2, ": "};
+			//Penser à modifier la première condition en son inverse
+			$$.code = concatTab(sTab, 17); }
 
 	|	SWITCH '(' expression ')' instruction
 			{char* sTab[4] = {"switch (", $3.code, ") ", $5.code};
+			char* tmpSwtich = "bonjour";
+			printf(" %s", tmpSwitch);
 			$$.code = concatTab(sTab, 4); }
 
 	|	CASE CONSTANTE ':' instruction
-			{char* sTab[4] = {"case ", itoa($2.intval), " : ", $4.code};
-			$$.code = concatTab(sTab, 4); }
+			{char* sTab[6] = {"case ", itoa($2.intval), "variable :", tmpSwitch, " : ", $4.code};
+			//char* sTab[] = { "if (", /*condition*/ " != ", $2.intval, ") goto ", /*etiquette suivante*/ $4.code, 
+			$$.code = concatTab(sTab, 6); }
 
 	|	DEFAULT ':' instruction
 			{$$.code = concat("default : ", $3.code); }
@@ -325,6 +334,7 @@ binary_comp	:
 
 char* res = "";
 int newNum = 1;
+char* tmpSwitch = "";
 
 char* concat(char* s1, char* s2)
 	{
@@ -365,10 +375,26 @@ char* itoa(int nb)
 	}
 
 
+char* insererDansRes(char* ajout){
+	res=concat(res,ajout);
+		}
+
+int ecrireFichierRes()
+{
+	FILE* fichier = NULL;
+	fichier = fopen("result_backend.c", "w");
+	if (fichier != NULL)
+	{
+		fputs(res, fichier);
+		fclose(fichier);
+	}
+	return 0;
+}
 
 int main()
 	{
 		yyparse();
+		ecrireFichierRes();
 	}
 
 
@@ -385,21 +411,4 @@ char* newLink() {
 		s = concat("L", itoa(link));
 		return (char *) s;		
 		}
-
-
-char* insererDansRes(char* ajout){
-	res=concat(res,ajout);
-		}
-
-int ecrireFichierRes()
-{
-	FILE* fichier = NULL;
-	fichier = fopen("result_backend.c", "w");
-	if (fichier != NULL)
-	{
-		fputs(res, fichier);
-		fclose(fichier);
-	}
-	return 0;
-}
 

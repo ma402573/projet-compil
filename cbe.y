@@ -1,4 +1,9 @@
 %{
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 %}
 %token IDENTIFICATEUR CONSTANTE VOID INT FOR WHILE IF ELSE SWITCH CASE DEFAULT
 %token BREAK RETURN PLUS MOINS MUL DIV LSHIFT RSHIFT BAND BOR LAND LOR LT GT 
@@ -49,7 +54,8 @@ type_fct	:
 	|	INT
 ;
 liste_parms	:	
-		liste_parms ',' parm
+		parm
+	|	liste_parms ',' parm
 	|	
 ;
 parm	:	
@@ -128,3 +134,20 @@ binary_comp	:
 	|	NEQ
 ;
 %%
+
+int yylex();
+int yylineno;
+char* yytext;
+
+int main()
+	{
+		yyparse();
+		return 0;
+	}
+
+
+void yyerror(const char *str)
+{
+    fprintf(stderr,"Error Line: %d Token: %s %s\n",yylineno, yytext, str);
+}
+
