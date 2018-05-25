@@ -171,8 +171,7 @@ selection	:
 			{//char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
 
 			char* l = newLink();
-			char* sTab[9] = {"if ( ", $3.code, ") goto ", l,";\n", $5.code,"\n",l,":"};
-			//                       ^inverser la condition
+			char* sTab[9] = {"if ( ", inverser($3.code), ") goto ", l,";\n", $5.code,"\n",l,":"};
 			$$.code = concatTab(sTab, 9); }
 
 	|	IF '(' condition ')' instruction ELSE instruction
@@ -180,8 +179,7 @@ selection	:
 
 			char* l1 = newLink();
 			char* l2 = newLink();
-			char* sTab[15] = {"if (", $3.code, ") goto ", l1, ";\n", $5.code, "goto ", l2, ";\n", l1, ": ", $7.code, "\n", l2, ": "};
-			//Penser à modifier la première condition en son inverse
+			char* sTab[15] = {"if (", inverser($3.code), ") goto ", l1, ";\n", $5.code, "goto ", l2, ";\n", l1, ": ", $7.code, "\n", l2, ": "};
 			$$.code = concatTab(sTab, 15); }
 
 	|	SWITCH '(' expression ')' instruction
@@ -428,6 +426,76 @@ bool varExist(char* var, char* tab, int tabPos){
     return false;
 }
 
+char **str_split (char *s, const char *ct){
+   char **tab = NULL;
+
+   if (s != NULL && ct != NULL)
+   {
+      int i;
+      char *cs = NULL;
+      size_t size = 1;
+
+      for (i = 0; (cs = strtok (s, ct)); i++)
+      {
+         if (size <= i + 1)
+         {
+            void *tmp = NULL;
+            size <<= 1;
+            tmp = realloc (tab, sizeof (*tab) * size);
+            if (tmp != NULL)
+            {
+               tab = tmp;
+            }
+            else
+            {
+               fprintf (stderr, "Memoire insuffisante\n");
+               free (tab);
+               tab = NULL;
+               exit (EXIT_FAILURE);
+            }
+         }
+         tab[i] = cs;
+         s = NULL;
+      }
+      tab[i] = NULL;
+   }
+   return tab;
+}
+
+char* inverser(char* cond){
+	char * res;
+	char ** tab = str_split(cond," ");
+	int taille = sizeof(tab);
+	char * acc = "";
+	for (int i=0;i<taille-1;i++){		
+		char * sTab[2];
+    	sTab[0]=acc;
+        if (! strcmp (tab[i],"<")){
+            sTab[1]=">=";
+        }
+        else if (! strcmp (tab[i],">")){
+            sTab[1]="<=";
+        }
+        else if (! strcmp (tab[i],"<=")){
+        	sTab[1]=">";
+        }
+        else if (! strcmp (tab[i],">=")){
+        	sTab[1]="<";
+        }
+        else if (! strcmp (tab[i],"==")){
+        	sTab[1]="!=";
+        }
+        else if (! strcmp (tab[i],"!=")){
+        	sTab[1]="==";
+        }
+        else {
+        	sTab[1]=tab[i];
+        }
+        acc = concatTab(sTab,2);
+
+	}
+    return acc;
+}
 
 int main()
 	{
