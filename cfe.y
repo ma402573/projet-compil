@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <stdbool.h>
 
 int yylex();
 int yylineno;
@@ -48,7 +48,6 @@ void yyerror(const char *str)
 programme	:	
 		liste_declarations liste_fonctions
 			{$$.code = concat($1.code, $2.code);
-			printf("%s ", $$.code);
 			insererDansRes($$.code); }
 ;
 
@@ -85,7 +84,8 @@ liste_declarateurs	:
 
 declarateur	:	
 		IDENTIFICATEUR
-			{$$.code = strdup($1.strval); }
+			{addVar(&tabF, $1.strval);
+			$$.code = strdup($1.strval); }
 
 	|	declarateur '[' CONSTANTE ']'
 			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]"};
@@ -141,7 +141,8 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-			{$$.code = concat($1.code, "\n"); }
+			{varExist($1.code, tabF, tabPos);
+			$$.code = concat($1.code, "\n"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -335,7 +336,11 @@ binary_comp	:
 
 char* res = "";
 int newNum = 1;
+int tabPos = 0;
+char tab[1];
 char* tmpSwitch = "";
+char* tabF = NULL;
+
 
 char* concat(char* s1, char* s2)
 	{
@@ -391,6 +396,38 @@ int ecrireFichierRes()
 	}
 	return 0;
 }
+
+
+void addVar(char **tab, char* var) {
+    
+    char* tmp = *tab;
+    *tab = realloc(*tab, sizeof(char) * sizeof(var));
+
+	if(!(*tab)) { 
+	    fputs("realloc failed", stderr);
+	    free(tmp);
+	    exit(0); 
+	}
+	
+	for (int i = tabPos + 1; i >= 0; i--){
+	    (*tab)[i + 1] = (*tab)[i];
+	}
+	(*tab)[0] = *var;
+	tabPos++;
+}
+
+
+bool varExist(char* var, char* tab, int tabPos){
+    for (int i = 0; i < tabPos + 1; i++) {
+        if (tab[i] == *var){
+            //printf("%s", "true");
+            return true;
+        }
+    }
+    printf("%s %s %s\n", "La variable", var, "n'est pas définie");
+    return false;
+}
+
 
 int main()
 	{
