@@ -378,6 +378,7 @@ char* itoa(int nb)
 		return s;
 	}
 
+////////////////////////////////////////////////////////////////////
 
 char* insererDansRes(char* ajout){
 	res=concat(res,ajout);
@@ -395,6 +396,7 @@ int ecrireFichierRes()
 	return 0;
 }
 
+////////////////////////////////////////////////////////////////////
 
 void addVar(char **tab, char* var) {
     
@@ -426,7 +428,10 @@ bool varExist(char* var, char* tab, int tabPos){
     return false;
 }
 
-char **str_split (char *s, const char *ct){
+////////////////////////////////////////////////////////////////////
+
+char **str_split (char *s, const char *ct)
+{
    char **tab = NULL;
 
    if (s != NULL && ct != NULL)
@@ -440,6 +445,7 @@ char **str_split (char *s, const char *ct){
          if (size <= i + 1)
          {
             void *tmp = NULL;
+
             size <<= 1;
             tmp = realloc (tab, sizeof (*tab) * size);
             if (tmp != NULL)
@@ -463,11 +469,9 @@ char **str_split (char *s, const char *ct){
 }
 
 char* inverser(char* cond){
-	char * res;
-	char ** tab = str_split(cond," ");
-	int taille = sizeof(tab);
+	char **tab = str_split(cond," ");
 	char * acc = "";
-	for (int i=0;i<taille-1;i++){		
+	for (int i=0;tab[i];i++){	
 		char * sTab[2];
     	sTab[0]=acc;
         if (! strcmp (tab[i],"<")){
@@ -492,10 +496,12 @@ char* inverser(char* cond){
         	sTab[1]=tab[i];
         }
         acc = concatTab(sTab,2);
-
 	}
+	printf("%s\n",acc );
     return acc;
 }
+
+////////////////////////////////////////////////////////////////////
 
 int main()
 	{
