@@ -148,8 +148,7 @@ instruction	:
 	|	saut
 			{$$.code = $1.code; }
 	|	affectation ';'
-			{//varExist($1.code, tabF);
-			$$.code = concat($1.code, "\n"); }
+			{$$.code = concat($1.code, "\n"); }
 	|	bloc
 			{$$.code = $1.code; }
 	|	appel
@@ -158,15 +157,14 @@ instruction	:
 
 iteration	:	
 		FOR '(' affectation ';' condition ';' affectation ')' instruction
-			{//char* sTab[8] = {"for(", $3.code, "; ", $5.code, "; ", $7.code, ")", $9.code};
+			{
 			char* l1 = newLink();
 			char* l2 = newLink();
 			char* sTab[16] = {$3.code, "\n",l1, ": ", "if (", inverser($5.code), ") goto ", l2, ";\n", $9.code, $7.code, "\n goto ", l1, ";\n", l2, ": "};
 			$$.code = concatTab(sTab, 16); }
 
 	|	WHILE '(' condition ')' instruction
-			{//char* sTab[4] = {"while( ", $3.code, ") ", $5.code};
-
+			{
 			char* l1 = newLink();
 			char* l2 = newLink();
 			char* sTab[14] = { "goto ", l1, ";\n", l2, ": ", $5.code, "\n", l1, ": ", "if (", inverser($3.code), ") goto ", l2, ";\n"};
@@ -175,15 +173,13 @@ iteration	:
 
 selection	:	
 		IF '(' condition ')' instruction %prec THEN
-			{//char* sTab[4] = {"if ( ", $3.code, ") ", $5.code};
-
+			{
 			char* l = newLink();
 			char* sTab[9] = {"if ( ", inverser($3.code), ") goto ", l,";\n", $5.code,"\n",l,":"};
 			$$.code = concatTab(sTab, 9); }
 
 	|	IF '(' condition ')' instruction ELSE instruction
-			{//char* sTab[6] = {"if (", $3.code, ") ", $5.code, " else ", $7.code};
-
+			{
 			char* l1 = newLink();
 			char* l2 = newLink();
 			char* sTab[15] = {"if (", inverser($3.code), ") goto ", l1, ";\n", $5.code, "goto ", l2, ";\n", l1, ": ", $7.code, "\n", l2, ": "};
@@ -192,33 +188,25 @@ selection	:
 
 	|	SWITCH '(' expression ')' instruction
 			{
-			//printf("COUCOU\n");
 			char* sTab[1] = { $5.code};
 			
 			char** resAcc = replaceCond(tabCase, $3.code, "condition");
-			for (int i = 0; resAcc[i]; i++){
-				printf("CHAINE \n%s\n", resAcc[i]);
-			}
 			char* acc = concatTab(resAcc, tabPosCase);
-			//char* acc2 = concatTab(tabBreak, tabPosBreak);
 
 			char* sTabBis = concatTab(sTab, 1);
 			char* res = concat(sTabBis, acc);
-			//res = concat(res, acc2);
 			$$.code = res;
 			}
 
 
 	|	CASE CONSTANTE ':' instruction
-			{//char* sTab[6] = {"case ", itoa($2.intval), "variable :", "pouet", " : ", $4.code};
+			{
 			char* l1 = newLink();
 			char* l2 = newLink();
-			//etiqSwitch(tabEtiqCase, l1, l2);
 
-			//tabEtiqCaseNb = addChar(tabEtiqCase, l2, tabEtiqCaseNb);
 			char* acc = concatTab(tabBreak, tabPosBreak);
-			//char* acc2 = concat($4, 
-			char* sTab[10] = {l1, ": if (", " condition", " != ", itoa($2.intval), ") goto ", l2, ";\n", /*etiquette suivante*/ $4.code, acc};
+
+			char* sTab[10] = {l1, ": if (", " condition", " != ", itoa($2.intval), ") goto ", l2, ";\n", $4.code, acc};
 			char* strCase = concatTab(sTab, 10);
 
 			tabPosCase = addChar(tabCase, strCase, tabPosCase);
@@ -231,7 +219,7 @@ selection	:
 
 saut	:	
 		BREAK ';'
-			{//$$.code = "break;\n";
+			{
 			char* l = " LExit";
 			char* sTab[3] = {"goto ", l, "\n"};
 			char* strBreak = concatTab(sTab, 3);
@@ -255,9 +243,7 @@ affectation	:
 
 bloc	:	
 		'{' liste_declarations liste_instructions '}'
-			{//char* sTab[3] = {"{\n", $2.code, $3.code };
-			//$$.code = concatTab(sTab, 3); 
-			$$.code = concat($2.code, $3.code); }
+			{$$.code = concat($2.code, $3.code); }
 ;
 
 appel	:	
@@ -380,7 +366,7 @@ int tabPosCase = 0;
 int tabPosBreak = 0;
 int accEtiq = 0;
 char tab[1];
-//char* tmpSwitch = "";
+
 char* tabF[300];
 char* tabSwitch = NULL;
 char* tabCase[300];
@@ -554,9 +540,8 @@ char* newLink() {
 
 char* etiqSwitch(char* tab[], char* l1, char* l2){
 	
-	//printf("tab[0] : %s\n", tab[0]);
 	char* elemUn = tab[0];
-	printf("%s\n", elemUn);
+
     if ( strcmp(elemUn, "0") == 0){
 	printf("Je passe");
 		addChar(tab, newLink(), accEtiq);
@@ -580,26 +565,17 @@ char** replaceCond(char* tab[], char* cond, char* txt){
 		char** tmp;
 		for (int i = 0; tab[i]; i++){
 			int j = 0;
-			printf("tab[iDEBUT] : %s\n", tab[i]);
 			tmp = str_split(tab[i], " ");
-			printf("tab[i_POST_SPLIT] : %s\n", tab[i]);
 
 			for( j; tmp[j]; j++){
-				printf("TMPJJJJ : %s \n", tmp[j]);
-				//printf("pouet : %s\n", cond); 
 
 				if(strcmp(txt, tmp[j]) == 0){
-					//printf("%s ", tmp[j]);
 					tmp[j] = cond;
-					//printf("tmp[j] : %s\n", tmp[j]);
 					tab[i] = *tmp;
-					//printf("tab[i] : %s\n", tab[i]);
 				} else { tab[i] = *tmp; }
 			}tab[i] = concatTab(tmp, j);
-	
 		}
 	return tab;
-	printf("Pas de condition\n");	
 }
 
 ////////////////////////////////////////////////////////////////////

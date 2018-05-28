@@ -1,0 +1,30 @@
+Merci de prendre le temps de me lire.
+
+Pour compiler le projet Mangourny-Soumarè, il vous sera plus simple d'utiliser les scripts fournis.
+Pour se faire, allez dans le dossier contenant les scripts et éxécutez-les de la façon suivante :
+
+./comLin.sh
+Cette commande correspond à la compilation du cfe et effectue :
+yacc -d cfe.y
+lex ANSI-C.l
+gcc lex.yy.c y.tab.c -o try -ll
+
+
+Quant à ./comCbe.sh, sert à compiler le cbe.
+Les commandes inclues dans le script sont :
+yacc -d cbe.y
+lex cbe.l
+gcc lex.yy.c y.tab.c -o try -ll
+
+
+Après avoir utilisé l'un des scripts, vous pourrez alors tester les différents programmes tests fournis de la façon suivante :
+./try < Tests/add.c
+
+Si une telle action est effectuée après l'utilisation du script pour le frontend, vous pourrez 
+constater qu'un fichier, du nom de result_backend.c qui contiendra alors le code tel qu'il sera après compilation.
+
+
+Rare seront les fichiers qui ne causeront pas d'erreur lors des tests à l'aide du cbe, cela est en grande partie dû à l'absence de l'implémentation des variables temporaires pour une transformation complète en code 3-adresses, le code ne sera donc pas reconnu.
+Parmis les transformations effectuées, certaines ne sont pas tout à fait conforme, mais elles sont quand même disponible. ex : Switch.
+
+En vous remerciant.
