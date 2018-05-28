@@ -183,18 +183,37 @@ selection	:
 			char* sTab[15] = {"if (", inverser($3.code), ") goto ", l1, ";\n", $5.code, "goto ", l2, ";\n", l1, ": ", $7.code, "\n", l2, ": "};
 			$$.code = concatTab(sTab, 15); }
 
+
 	|	SWITCH '(' expression ')' instruction
-			{char* sTab[4] = {"switch (", $3.code, ") ", $5.code};
-			char* acc = concatTab(tabCase, tabPosCase);
-			char* sTabBis = concatTab(sTab, 4);
+			{
+			//printf("COUCOU\n");
+			char* sTab[1] = { $5.code};
+			
+			char** resAcc = replaceCond(tabCase, $3.code, "condition");
+			for (int i = 0; resAcc[i]; i++){
+				printf("CHAINE \n%s\n", resAcc[i]);
+			}
+			char* acc = concatTab(resAcc, tabPosCase);
+			//char* acc2 = concatTab(tabBreak, tabPosBreak);
+
+			char* sTabBis = concatTab(sTab, 1);
 			char* res = concat(sTabBis, acc);
+			//res = concat(res, acc2);
 			$$.code = res;
 			}
 
+
 	|	CASE CONSTANTE ':' instruction
 			{//char* sTab[6] = {"case ", itoa($2.intval), "variable :", "pouet", " : ", $4.code};
-			char* sTab[6] = { "if (", " condition", " != ", itoa($2.intval), ") goto ", /*etiquette suivante*/ $4.code};
-			char* strCase = concatTab(sTab, 6);
+			char* l1 = newLink();
+			char* l2 = newLink();
+			//etiqSwitch(tabEtiqCase, l1, l2);
+
+			//tabEtiqCaseNb = addChar(tabEtiqCase, l2, tabEtiqCaseNb);
+			char* acc = concatTab(tabBreak, tabPosBreak);
+			//char* acc2 = concat($4, 
+			char* sTab[10] = {l1, ": if (", " condition", " != ", itoa($2.intval), ") goto ", l2, ";\n", /*etiquette suivante*/ $4.code, acc};
+			char* strCase = concatTab(sTab, 10);
 
 			tabPosCase = addChar(tabCase, strCase, tabPosCase);
 			$$.code = ""; 
@@ -206,7 +225,13 @@ selection	:
 
 saut	:	
 		BREAK ';'
-			{$$.code = "break;\n"; }
+			{//$$.code = "break;\n";
+			char* l = " LExit";
+			char* sTab[3] = {"goto ", l, "\n"};
+			char* strBreak = concatTab(sTab, 3);
+			tabPosBreak = addChar(tabBreak, strBreak, 0);
+			$$.code = "";}
+
 	|	RETURN ';'
 			{$$.code = "return;\n"; }
 
@@ -345,11 +370,15 @@ int newNum = 1;
 int tabPos = 0;
 int tabPosSwitch = 0;
 int tabPosCase = 0;
+int tabPosBreak = 0;
+int accEtiq = 0;
 char tab[1];
 //char* tmpSwitch = "";
 char* tabF[300];
 char* tabSwitch = NULL;
 char* tabCase[300];
+char* tabBreak[300];
+char* tabEtiqCase[600] = {"0"};
 
 
 char* concat(char* s1, char* s2)
@@ -505,6 +534,67 @@ char* inverser(char* cond){
 
 ////////////////////////////////////////////////////////////////////
 
+char* newLink() {
+		int link = newNum;
+		newNum++;
+		char* s = malloc (sizeof(char) * (10 + 1));
+		if (s == NULL){ exit(0); }
+		s = concat("L", itoa(link));
+		return (char *) s;		
+		}
+
+char* etiqSwitch(char* tab[], char* l1, char* l2){
+	
+	//printf("tab[0] : %s\n", tab[0]);
+	char* elemUn = tab[0];
+	printf("%s\n", elemUn);
+    if ( strcmp(elemUn, "0") == 0){
+	printf("Je passe");
+		addChar(tab, newLink(), accEtiq);
+        addChar(tab, newLink(), accEtiq+1);
+        l1 = tab[accEtiq];
+        l2 = tab[accEtiq + 1];
+        accEtiq++;
+        return l1, l2;
+
+    } else {
+		printf("Je colle");
+        addChar(tab, newLink(), accEtiq);
+        l1 = tab[accEtiq-1];
+        l2 = tab[accEtiq];
+        accEtiq++;
+        return l1, l2;
+    }
+}
+
+char** replaceCond(char* tab[], char* cond, char* txt){
+		char** tmp;
+		for (int i = 0; tab[i]; i++){
+			int j = 0;
+			printf("tab[iDEBUT] : %s\n", tab[i]);
+			tmp = str_split(tab[i], " ");
+			printf("tab[i_POST_SPLIT] : %s\n", tab[i]);
+
+			for( j; tmp[j]; j++){
+				printf("TMPJJJJ : %s \n", tmp[j]);
+				//printf("pouet : %s\n", cond); 
+
+				if(strcmp(txt, tmp[j]) == 0){
+					//printf("%s ", tmp[j]);
+					tmp[j] = cond;
+					//printf("tmp[j] : %s\n", tmp[j]);
+					tab[i] = *tmp;
+					//printf("tab[i] : %s\n", tab[i]);
+				} else { tab[i] = *tmp; }
+			}tab[i] = concatTab(tmp, j);
+	
+		}
+	return tab;
+	printf("Pas de condition\n");	
+}
+
+////////////////////////////////////////////////////////////////////
+
 int main()
 	{
 		yyparse();
@@ -517,12 +607,4 @@ int yywrap()
        		 return 1;
 	} 
 
-char* newLink() {
-		int link = newNum;
-		newNum++;
-		char* s = malloc (sizeof(char) * (10 + 1));
-		if (s == NULL){ exit(0); }
-		s = concat("L", itoa(link));
-		return (char *) s;		
-		}
 
