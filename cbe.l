@@ -37,7 +37,7 @@ IS                      (u|U|l|L)*
 
 [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  {/* Sert a ignorer les commentaires */}
 
-[0-9]+						{ return CONSTANTE; }
+[-]?[0-9]+						{ return CONSTANTE; }
 [_]?[a-zA-Z]([a-zA-Z]|[0-9])* 	{ return IDENTIFICATEUR; }
 
 ">>"					{ return RSHIFT; }
