@@ -89,17 +89,22 @@ declarateur	:
 			$$.code = strdup($1.strval); }
 
 	|	declarateur '[' CONSTANTE ']'
-			{char* sTab[4] = {$1.code, "[", itoa($3.intval), "]"};
+			{tabPos = addChar(tabF, $1.strval, tabPos);
+			char* sTab[4] = {$1.code, "[", itoa($3.intval), "]"};
 			$$.code = concatTab(sTab, 4); }
 ;
 
 fonction	:	
 		type IDENTIFICATEUR '(' liste_parms ')' '{' liste_declarations liste_instructions '}'
-			{char* sTab[8] = {$1.code, $2.strval, "(", $4.code, ") {\n", $7.code, $8.code, "}\n"};
+			{addFunction($2.strval);
+			//addNbArg($4.code);
+			char* sTab[8] = {$1.code, $2.strval, "(", $4.code, ") {\n", $7.code, $8.code, "}\n"};
 			$$.code = concatTab(sTab, 8); }
 
 	|	EXTERN type IDENTIFICATEUR '(' liste_parms ')' ';'
-			{char* sTab[6] = {"extern ", $2.code, $3.strval, "(", $5.code, ");\n"};
+			{addFunction($3.strval);
+
+			char* sTab[6] = {"extern ", $2.code, $3.strval, "(", $5.code, ");\n"};
 			$$.code = concatTab(sTab, 6); }
 ;
 
@@ -124,7 +129,8 @@ liste_parms	:
 
 parm	:
 		INT IDENTIFICATEUR
-			{$$.code = concat("int ", $2.strval); }
+			{tabPos = addChar(tabF, $2.strval, tabPos);
+			$$.code = concat("int ", $2.strval); }
 ;
 
 liste_instructions :	
@@ -242,7 +248,7 @@ saut	:
 
 affectation	:	
 		variable '=' expression
-			{varExist($1.code, tabF);
+			{//varExist($1.code, tabF);
 			char* sTab[4] = {$1.code, " = ", $3.code, ";"};
 			$$.code = concatTab(sTab, 4); }
 ;
@@ -262,7 +268,8 @@ appel	:
 
 variable	:	
 		IDENTIFICATEUR
-			{$$.code = $1.strval; }
+			{varExist($1.code, tabF); 
+			$$.code = $1.strval; }
 
 	|	variable '[' expression ']'
 			{char* sTab[4] = {$1.code, "[", $3.code, "]"};
@@ -380,6 +387,8 @@ char* tabCase[300];
 char* tabBreak[300];
 char* tabEtiqCase[600] = {"0"};
 
+char* tabFunction[300];
+int* tabFuncNbArg[] = {};
 
 char* concat(char* s1, char* s2)
 	{
@@ -594,6 +603,18 @@ char** replaceCond(char* tab[], char* cond, char* txt){
 }
 
 ////////////////////////////////////////////////////////////////////
+
+void addFunction(char * identificateur){
+	int taille = 0;
+	int i = 0;
+    for (i;tabFunction[i];i++){
+        taille++;
+    }
+    tabFunction[i] = identificateur;
+}
+
+
+
 
 int main()
 	{
